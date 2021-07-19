@@ -1,6 +1,6 @@
 # Data Structure Practice
 
-This project was inspired by @jwasham's project jwasham/practice-c. I used some of his function headers and initial implementations for the Array library to kickstart my project, but I'm implementing on my own as I go.
+This project was inspired by [@jwasham's](https://github.com/jwasham) project [practice-c](https://github.com/jwasham/practice-c). I used some of his function headers and initial implementations for the Array library to kickstart my project, but I'm implementing on my own as I go.
 
 This is a playground for practicing data structures. I plan to implement each data structure from scratch as a library. I'll possibly add functions that do "cool tricks." I'll revisit my implementations over time to try to improve performance. Here's the list of what I plan to implement, and you can see progress so far.
 
