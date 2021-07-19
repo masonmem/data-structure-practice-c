@@ -1,77 +1,80 @@
 //
 // Created by Mason Morris on 7/16/21.
 //
-
 #ifndef C_ARRAY_H
 #define C_ARRAY_H
 
 #include <assert.h>
 #include <stdbool.h>
 
-typedef struct MMImplementationArray {
+#define ARRAY_GROWTH_RATE 2;
+#define ARRAY_MIN_INIT_SIZE 8;
+
+typedef struct ImplementationArray {
     int size;
     int capacity;
     int *data;
-} MArray;
+} Array;
 
-// Creates a new MArray to accomodate
+// Creates a new MArray to accommodate
 // the provided capacity
-MArray *marray_new(int capacity);
-void marray_destroy(MArray *arrptr);
+Array *array_new(int capacity);
+
+void array_destroy(Array *arrptr);
 
 // Checks to see if resizing is needed to support the candidate_size
 // and resizes to accommodate.
 
-void marray_resize_for_size(MArray *arrptr, int candidate_size);
+void array_resize_for_size(Array *arrptr, int candidate_size);
 
 // Determines the actual capacity (in terms of the power of growth factor)
 // required to accommodate a given capacity.
-int marray_determine_capacity(int capacity);
+int array_determine_capacity(int capacity);
 
 // Increases the array size to size determined by growth factor
-void marray_upsize(MArray *arrptr);
+void array_upsize(Array *arrptr);
 
 // Decreases the array size to size determined by growth factor
-void marray_downsize(MArray *arrptr);
+void array_downsize(Array *arrptr);
 
 // Returns the number of elements managed in the array.
-int marray_size(MArray *arrptr);
+int array_size(Array *arrptr);
 
 // Appends the given item to the end of the array.
-void marray_push(MArray *arrptr, int item);
+void array_push(Array *arrptr, int item);
 
 // Prints public information about the array for debug purposes.
-void marray_print(MArray *arrptr);
+void array_print(Array *arrptr);
 
 // Returns the actual capacity the array can accommodate.
-int marray_capacity(MArray *arrptr);
+int array_capacity(Array *arrptr);
 
 // Returns the value stored at the given index.
-int marray_at(MArray *arrptr, int index);
+int array_at(Array *arrptr, int index);
 
 // Returns true if array is empty.
-bool marray_is_empty(MArray *arrptr);
+bool array_is_empty(Array *arrptr);
 
 // Inserts the given value at the given index, shifting
 // current and trailing elements to the right.
-void marray_insert(MArray *arrptr, int index, int value);
+void array_insert(Array *arrptr, int index, int value);
 
 // Prepends the given value to the array, shifting trailing
 // elements to the right.
-void marray_prepend(MArray *arrptr, int value);
+void array_prepend(Array *arrptr, int value);
 
 // Removes the last item from the array and returns its value.
-int marray_pop(MArray *arrptr);
+int array_pop(Array *arrptr);
 
 // Deletes the item stored at the given index, shifting trailing
 // elements to the left.
-void marray_delete(MArray *arrptr, int index);
+void array_delete(Array *arrptr, int index);
 
 // Removes the given value from the array, even if it appears more than once.
-void marray_remove(MArray *arrptr, int value);
+void array_remove(Array *arrptr, int value);
 
 // Returns the index of the first occurrence of the given value in the array.
-int marray_find(MArray *arrptr, int value);
+int array_find(Array *arrptr, int value);
 
 // Checks to see if given value is valid for memory, and exits if so
 void check_address(void *p);
