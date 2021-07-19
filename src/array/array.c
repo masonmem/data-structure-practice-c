@@ -7,13 +7,18 @@
 #include <stdio.h>
 
 #include "array.h"
+#include "genutils.h"
 
 Array *array_new(int capacity) {
+    // Allocate the Array struct
     Array *arr = malloc(sizeof(Array));
     check_address(arr);
 
-    int trueCapacity = array_determine_capacity(capacity);
+    // Find appropriate sizing for the requested data capacity
+    int trueCapacity = array_capacity_fit(capacity);
 
+    // Initialize the object variables and allocate the data member based on the
+    // determined capacity.
     arr->size = 0;
     arr->capacity = trueCapacity;
     arr->data = (int *)malloc(sizeof(int) * trueCapacity);
@@ -23,8 +28,8 @@ Array *array_new(int capacity) {
 }
 
 void array_upsize(Array *arrptr) {
-    // Get the appropriate resizing based on the current capacity
-    int newCapacity = array_determine_capacity(arrptr->capacity);
+    // An upsize means current capacity * growth rate
+    int newCapacity = arrptr->capacity * ARRAY_GROWTH_RATE;
 
     // Re-allocate the Array's data block according to the determined size
     int *new_data = (int*)realloc(arrptr->data, sizeof(int) * newCapacity);
@@ -37,14 +42,33 @@ void array_upsize(Array *arrptr) {
     arrptr->capacity = newCapacity;
 }
 
+void array_downsize(Array *arrptr) {
+    // A downsize is the current capacity divided by the GROWTH_RATE
+    int newCapacity = arrptr->capacity / ARRAY_GROWTH_RATE;
 
-int array_determine_capacity(int capacity) {
-    // Initial array cannot be smaller than 1 element
-    if (capacity < 1) {
-        fprintf(stderr, "ERROR: Cannot initialize array with capacity < 1.");
-        exit(EXIT_FAILURE);
+    // If the downsize means truncating data, don't do it.
+    if (newCapacity < arrptr->size) {
+        fprintf(stdout, "INFO: Unable to downsize array, as it would lead to truncation.\n");
+        return;
+    }
+    else if (newCapacity < ARRAY_MIN_INIT_SIZE) {
+        fprintf(stdout, "INFO: Unable to downsize array, already at minimum size.\n");
+        return;
     }
 
+    // Re-allocate the array to the new downsized length
+    int *new_data = (int*) realloc(arrptr->data, sizeof(int) * newCapacity);
+    check_address(new_data);
+
+    // Swap the pointer
+    arrptr->capacity = newCapacity;
+    arrptr->data = new_data;
+}
+
+
+int array_capacity_fit(int capacity) {
+    // Figure out the appropriate size. The array grows based on the GROWTH_RATE.
+    // The first sizing that fits the request will be returned.
     int trueCapacity = ARRAY_MIN_INIT_SIZE;
     while (capacity > trueCapacity) {
         trueCapacity *= ARRAY_GROWTH_RATE;
@@ -53,10 +77,60 @@ int array_determine_capacity(int capacity) {
     return trueCapacity;
 }
 
-void check_address(void *p) {
-    if (p == NULL) {
-        printf("ERROR: Unable to allocate memory.\n");
-        exit(EXIT_FAILURE);
+void array_destroy(Array *arrptr) {
+    if (arrptr == NULL) {
+        // Not necessarily a failure state... Try to keep going.
+        debug("INFO: array_destroy(): Tried to free Array pointer that was null.");
+        return;
     }
+
+    // Free the Array's data member
+    if (arrptr->data) {
+        free(arrptr->data);
+    }
+
+    // Free the Array object itself
+    free(arrptr);
+    arrptr = NULL;
 }
+
+int array_size(Array *arrptr) {
+    return arrptr->size;
+}
+
+void array_push(Array *arrptr, int item) {
+    // Because 0-indexed, size is current element + 1
+    int insertIdx = arrptr->size;
+
+    // If new element will take us over capacity, resize up
+    if ((insertIdx + 1) > arrptr->capacity) {
+        array_upsize(arrptr);
+    }
+
+    arrptr->data[insertIdx] = item;
+    arrptr->size++;
+}
+
+bool array_pop(Array *arrptr, int *value) {
+    if (arrptr->size < 1) {
+        fprintf(stdout, "INFO: Unable to pop item off Array. Array is empty.\n");
+        return false;
+    }
+
+    // Last element is at size - 1 because array is 0-indexed. Update passed value by pointer
+    int index = arrptr->size - 1;
+    *value = arrptr->data[index];
+
+    // Clear data
+    arrptr->data[index] = 0;
+    arrptr->size--;
+
+    return true;
+}
+
+void array_print(Array *arrptr) {
+
+}
+
+
 

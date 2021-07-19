@@ -8,6 +8,8 @@
 // Include debug macros
 #include "debug.h"
 
+// Checks to see if given value is valid for memory, and exits if so
+void check_address(void *p);
 
 
 #endif //C_PRACTICE_UTILS_H
