@@ -42,13 +42,17 @@ void array_push(Array *arrptr, int item);
 // Value stored in value pointer passed to array_pop().
 bool array_pop(Array *arrptr, int *value);
 
-void array_print(Array *arrptr);
+// Prints a descriptive character representation of the array's size, capacity, and contents into the provided file.
+void array_print(Array *arrptr, FILE *fptr);
 
 int array_capacity(Array *arrptr);
 
 int array_at(Array *arrptr, int index);
 
 bool array_is_empty(Array *arrptr);
+
+// Resize an array to fit the needed capacity
+void array_resize(Array *arrptr, int neededCapacity);
 
 void array_insert(Array *arrptr, int index, int value);
 

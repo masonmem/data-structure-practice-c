@@ -107,7 +107,7 @@ void array_push(Array *arrptr, int item) {
         array_upsize(arrptr);
     }
 
-    arrptr->data[insertIdx] = item;
+    *(arrptr->data + insertIdx) = item;
     arrptr->size++;
 }
 
@@ -119,7 +119,7 @@ bool array_pop(Array *arrptr, int *value) {
 
     // Last element is at size - 1 because array is 0-indexed. Update passed value by pointer
     int index = arrptr->size - 1;
-    *value = arrptr->data[index];
+    *value = *(arrptr->data + index);
 
     // Clear data
     arrptr->data[index] = 0;
@@ -128,9 +128,71 @@ bool array_pop(Array *arrptr, int *value) {
     return true;
 }
 
-void array_print(Array *arrptr) {
+void array_print(Array *arrptr, FILE *fptr) {
+    if (fptr == NULL) {
+        fprintf(stderr, "ERROR: Could not print. File or stream does not exist.");
+    }
+    if (arrptr == NULL) {
+        fprintf(fptr, "Array: NULL\n");
+        return;
+    }
+
+    else {
+        fprintf(fptr, "Array size: %d\n", arrptr->size);
+        fprintf(fptr, "Array capacity: %d\n", arrptr->capacity);
+        fprintf(fptr, "Array contents:\n");
+        for (int i = 0; i < arrptr->size; i++) {
+            fprintf(fptr, "[ %d ]\n", *(arrptr->data + i));
+        }
+    }
+}
+
+int array_capacity(Array *arrptr) {
+    return arrptr->capacity;
+}
+
+int array_at(Array *arrptr, int index) {
+    if (index < 0 || index >= arrptr->size) {
+        fprintf(stderr, "ERROR: Unable to fetch data at index %d. Invalid index.", index);
+    }
+    return *(arrptr->data + index);
+}
+
+bool array_is_empty(Array *arrptr) {
+    if (arrptr == NULL) {
+        fprintf(stderr, "ERROR: Array is uninitialized while trying to check if empty.");
+        return true;
+    }
+    return arrptr->size < 1;
+}
+
+void array_insert(Array *arrptr, int index, int value) {
 
 }
+
+void array_resize(Array *arrptr, int neededCapacity) {
+    if (arrptr == NULL) {
+        fprintf(stderr, "ERROR: Cannot resize uninitialized Array.");
+        return;
+    }
+
+    if (arrptr->capacity == neededCapacity) {   // Array's current capacity fits. No need to resize.
+        return;
+    }
+    else if (arrptr->capacity < neededCapacity) {   // Array's current capacity is too small. Upsize until it fits.
+        while (arrptr->capacity < neededCapacity) {
+            array_upsize(arrptr);
+        }
+    }
+    else {  // Array's current capacity is bigger than necessary. Downsize.
+        while ( ((arrptr->capacity / ARRAY_GROWTH_RATE) >= arrptr->size) && ((arrptr->capacity / ARRAY_GROWTH_RATE) >= neededCapacity)
+            && arrptr->capacity > ARRAY_MIN_INIT_SIZE )
+        {
+            array_downsize(arrptr);
+        }
+    }
+}
+
 
 
 
